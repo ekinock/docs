@@ -53,13 +53,13 @@ CMD ["tail", "-f", "/dev/null"]
 - t7 et t8 : impact de l'**ordre** dans le docker-compose.yml (dans `networks` puis dans `services`)
 
 
-> **Conclusions intermédiaires :**
+> **Conclusions intermédiaires :** \
 > Dans certains cas l'**ordre alphabétique** a l'air de primer sur l'ordre du docker-compose, dans d'autres c'est l'inverse \
 > Les réseaux `internal=true` ne sont **jamais route par défaut** \
 > Lorsque `external=false`, les **interfaces** semblent être attribuées en suivant l'**ordre alphabétique** \
 > Seul l'ordre dans l'**attribut de niveau 1** "networks" a l'air d'avoir un impact, pas celui dans `services > <nom_service> > networks` \
-> L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire
->- Les alias n'ont pas d'effet
+> L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire \
+> Les alias n'ont pas d'effet
 
 
 ### Deuxième phase
@@ -70,13 +70,13 @@ CMD ["tail", "-f", "/dev/null"]
 - t14 et t15 : impact de l'**ordre** sur l'attribution des interfaces dans un mix `internal=true` et `internal=false`  
 - t16 à t18 : impact de l'**ordre dans le fichier** par rapport à l'ordre **alphabétique**, comparaison selon forme de liste ou non
 
-> **Conclusions intermédiaires :**
->> L'**absence d'effet des alias** se confirme
->> Le fait que l'**ordre** dans le docker-compose et l'ordre **alphabétique** aient un **impact** se confirme, bien que les règles restent obscures
->> Il est impossible d'identifier les règles d'attribution des interfaces
->> L'impact du paramètre `internal=true/false` sur l'attribution de la route par défaut est **confirmé**
->> **Un paramètre négligé jusqu'à présent apparaît comme significatif** : la forme de liste (avec des "-") ou non
->>> Plus de tests doivent être réalisés sur ce point
+> **Conclusions intermédiaires :** \
+> L'**absence d'effet des alias** se confirme \
+> Le fait que l'**ordre** dans le docker-compose et l'ordre **alphabétique** aient un **impact** se confirme, bien que les règles restent obscures \
+> Il est impossible d'identifier les règles d'attribution des interfaces \
+> L'impact du paramètre `internal=true/false` sur l'attribution de la route par défaut est **confirmé** \
+> **Un paramètre négligé jusqu'à présent apparaît comme significatif** : la forme de liste (avec des "-") ou non \
+> -> Plus de tests doivent être réalisés sur ce point
 
 ### Troisième phase
 
@@ -86,47 +86,83 @@ CMD ["tail", "-f", "/dev/null"]
 - t19 et t20 : réseau `internal` = dernier dans le fichier  
 - t21 et t22 : réseau `internal` ≠ dernier dans le fichier
 
-> **Conclusions intermédiaires :**
->> Si un seul réseau est `internal=true`, c'est à lui qu'est **attribuée une interface en dernier** (ethX avec le X le plus élevé)
->> La **première adresse réseau** est attribuée au **dernier réseau dans le fichier** docker-compose
->> Si ce réseau est `internal=false`, il devient la **route par défaut**
->> Sinon, la route par défaut est attribuée selon des modalités non explicites
+> **Conclusions intermédiaires :** \
+> Si un seul réseau est `internal=true`, c'est à lui qu'est **attribuée une interface en dernier** (ethX avec le X le plus élevé) \
+> La **première adresse réseau** est attribuée au **dernier réseau dans le fichier** docker-compose \
+> Si ce réseau est `internal=false`, il devient la **route par défaut** \
+> Sinon, la route par défaut est attribuée selon des modalités non explicites
 
 ## Traitement des données
-
-- Jeu de données des 22 tests adapté à un **traitement qualitatif**
-- La route par défaut est toujours un réseau `internal=false`
-- Aucune tendance majoritaire ne se confirme, données inexploitables autrement
 
 Le jeu de données obtenu avec les 22 tests est adapté à un **traitement qualitatif** *(trop restreint pour un traitement quantitatif)*. \
 À ce stade, on peut déjà affirmer que **la route par défaut est forcément un réseau ayant le paramètre `internal=false`**. \
 Mis à part cela, ***aucune tendance majoritaire ne semble se confirmer*** ; les données obtenues sont toujours inexploitables en l'état.
 
 ### Analyse statistique
-- Études sur : **eth0**, **route par défaut**, **première adresse réseau**
-- Mesures : ordre alphabétique, ordre sur fichier, attributs `external` et `internal`, forme de liste
-- Modes : échelle 1 à 3 + booléens
+#### Mise en forme des données
+J'ai étudié 3 aspects : 
+- les critères d'attribution de **eth0**
+- les critères d'attribution de la **route par défaut**
+- les critères d'attribution de la **première adresse réseau**
 
-### Influence de l'attribut external
-- Seuls 6 tests prennent en compte l'attribut
-- La **première adresse** attribuée correspond toujours à un réseau `external=true`
-- L'attribut `external=true` influence l'ordre de traitement par le daemon, plus que la hiérarchie des interfaces
+Pour chacun j'ai mesuré : 
+- l'**ordre alphabétique** du nom du réseau
+- l'**ordre sur le fichier** docker-compose.yml
+- la valeur de l'**attribut "external"** *(booléen)*
+- si les réseaux sont **organisés sous forme de liste** (avec des "-") dans le docker-compose //(booléen)//
+Ainsi que les 2 autres aspects non étudiés (par exemple, j'ai relevé le numéro de l'interface et de l'adresse réseau pour chaque test lorsque j'étudiais l'attribution de la route par défaut).
 
-## Variabilité des résultats
+J'ai utilisé 2 modes de mesure : 
+- une **échelle de 1 à 3**, pour identifier l'ordre
+    1. premier
+    2. n'importe lequel au milieu
+    3. dernier
+- des **booléens**
 
-### Périmètre
-- `external` et `internal` non pris en compte ici  
-- Tous les autres attributs sont considérés
+#### Influence de l'attribut external
+Les attributs `internal` et `external` ne sont étudiés que dans 6 tests. Pour tous les autres, ils prennent la valeur `false` par défaut. \
+En termes statistiques, il est difficile de différencier les occurrences où les réseaux qui ressortent ont un attribut `external = false` ou `internal = false` parce que l'attribut n'a pas été pris en compte et a conservé sa valeur par défaut de ceux où ce résultat a du sens lorsque l'on traite le jeu de données en entier. \
+C'est pourquoi je vais traiter ces cas en amont et les ignorer par la suite.
 
-### Méthodologie
-- Calcul de **l'indice de Simpson** pour chaque critère (nom, ordre, …)  
-- Interprétation :  
-  - 1 -> homogénéité totale  
-  - [0,65;1[ -> catégorie domine  
-  - [0,4;0,65[ -> équilibré  
-  - [0,3;0,4[ -> très hétérogène
+➡️ *à noter que l'on a déjà des conclusions solides sur l'impact de l'attribut `internal = true`, seul l'impact de l'attribut `external = true` reste à étudier.*
 
-### Analyse proportionnée globale
+##### Méthodologie
+Pour évaluer l'impact de `external = true`, j'ai d'abord mesuré la proportion de tests qui incluaient au moins un réseau ayant cette valeur d'attribut. \
+J'ai ensuite fait, pour chaque aspect étudié, le rapport entre le nombre de fois où un réseau `external = true` ressortait et le nombre de fois où cet attribut était testé. 
+
+➡️ *à noter que le **nombre de tests** qui étudient cet attribut est **particulièrement petit**.*
+
+> **Conclusions intermédiaires :** \
+> Seuls 6 tests prennent en compte cet attribut \
+> Sur cet échantillon, la **première adresse** attribuée correspond **toujours** à un réseau `external = true` \
+> Une tendance similaire semble se dessiner pour les autres aspects, mais pas aussi nettement \
+> Il semble que l'attribut `external = true` ait une influence sur l'**ordre dans lequel le daemon traite les réseaux** plus que sur la manière dont il les hiérarchise
+
+#### Variabilité des résultats
+
+##### Périmètre
+- Les attributs `external` et `internal` ne sont **pas pris en compte** ici.
+- **Tous les autres attributs** sont pris en compte.
+
+##### Méthodologie
+Pour mesurer **l'hétérogénéité** des résultats, j'ai calculé **[l'indice d'équitabilité de Simpson](https://www.bonobosworld.org/fr/glossaire/indice-d-equitabilite-de-simpson)** de chaque critère (nom, ordre, …) pour chaque aspect traité (attribution de la première interface, adresse réseau ou de la route par défaut).
+
+Dans ce contexte, cet indice s'interprète de la manière suivante : 
+- 1 -> **homogénéité** totale
+- valeurs échelonnées *(3 catégories)* :
+  - ∈ [0,65;1[ -> **une catégorie domine** largement
+  - ∈ [0.4;0.65[ -> catégories **équilibrées** (légère domination d'une catégorie)
+  - ∈ [0.3;0.4[ -> très **hétérogène** *(maximum théorique)*
+- booléens :
+  - ∈ [0,75;1[ -> **une catégorie domine** largement
+  - ∈ [0.55;0.75[ -> catégories **équilibrées** (légère domination d'une catégorie)
+  - ∈ [0.48;0.55[ -> très **hétérogène** *(maximum théorique)* 
+
+> **Conclusions intermédiaires :** \
+> la **route par défaut est le 1er par ordre alphabétique** dans la *majorité* des cas \
+> les autres critères sont **très hétérogènes** *(indice < 55)*
+
+#### Analyse proportionnée globale
 - Proportion de réseaux selon : position fichier, ordre alphabétique, `external=true`, `internal=true`  
 - Observation selon forme de liste
 
