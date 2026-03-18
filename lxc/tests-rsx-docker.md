@@ -43,13 +43,6 @@ CMD ["tail", "-f", "/dev/null"]
 
 ### Première phase
 
-**Conclusions intermédiaires :**
-- Dans certains cas l'**ordre alphabétique** a l'air de primer sur l'ordre du docker-compose, dans d'autres c'est l'inverse
-- Les réseaux `internal=true` ne sont **jamais route par défaut**
-- Lorsque `external=false`, les **interfaces** semblent être attribuées en suivant l'**ordre alphabétique**
-- Seul l'ordre dans l'**attribut de niveau 1** "networks" a l'air d'avoir un impact, pas celui dans `services > <nom_service> > networks`
-- L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire
-- Les alias n'ont pas d'effet
 
 **Tests :**
 - t1 : impact des **noms** & de l'**ordre** dans le docker-compose.yml  
@@ -59,15 +52,17 @@ CMD ["tail", "-f", "/dev/null"]
 - t6 : impact de l'attribut **`external=[true;false]`**  
 - t7 et t8 : impact de l'**ordre** dans le docker-compose.yml (dans `networks` puis dans `services`)
 
-### Deuxième phase
 
-**Conclusions intermédiaires :**
-- L'**absence d'effet des alias** se confirme
-- Le fait que l'**ordre** dans le docker-compose et l'ordre **alphabétique** aient un **impact** se confirme, bien que les règles restent obscures
-- Il est impossible d'identifier les règles d'attribution des interfaces
-- L'impact du paramètre `internal=true/false` sur l'attribution de la route par défaut est **confirmé**
-- **Un paramètre négligé jusqu'à présent apparaît comme significatif** : la forme de liste (avec des "-") ou non
-  - Plus de tests doivent être réalisés sur ce point
+> **Conclusions intermédiaires :**
+>> Dans certains cas l'**ordre alphabétique** a l'air de primer sur l'ordre du docker-compose, dans d'autres c'est l'inverse
+>> Les réseaux `internal=true` ne sont **jamais route par défaut**
+>> Lorsque `external=false`, les **interfaces** semblent être attribuées en suivant l'**ordre alphabétique**
+>> Seul l'ordre dans l'**attribut de niveau 1** "networks" a l'air d'avoir un impact, pas celui dans `services > <nom_service> > networks`
+>> L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire
+>> Les alias n'ont pas d'effet
+
+
+### Deuxième phase
 
 **Tests :**
 - t9 et t10 : impact de l'attribut **`external=[true;false]`** par rapport à **l'ordre** dans le docker-compose  
@@ -75,13 +70,15 @@ CMD ["tail", "-f", "/dev/null"]
 - t14 et t15 : impact de l'**ordre** sur l'attribution des interfaces dans un mix `internal=true` et `internal=false`  
 - t16 à t18 : impact de l'**ordre dans le fichier** par rapport à l'ordre **alphabétique**, comparaison selon forme de liste ou non
 
-### Troisième phase
+> **Conclusions intermédiaires :**
+>> L'**absence d'effet des alias** se confirme
+>> Le fait que l'**ordre** dans le docker-compose et l'ordre **alphabétique** aient un **impact** se confirme, bien que les règles restent obscures
+>> Il est impossible d'identifier les règles d'attribution des interfaces
+>> L'impact du paramètre `internal=true/false` sur l'attribution de la route par défaut est **confirmé**
+>> **Un paramètre négligé jusqu'à présent apparaît comme significatif** : la forme de liste (avec des "-") ou non
+>>> Plus de tests doivent être réalisés sur ce point
 
-**Conclusions intermédiaires :**
-- Si un seul réseau est `internal=true`, c'est à lui qu'est **attribuée une interface en dernier** (ethX avec le X le plus élevé)
-- La **première adresse réseau** est attribuée au **dernier réseau dans le fichier** docker-compose
-- Si ce réseau est `internal=false`, il devient la **route par défaut**
-- Sinon, la route par défaut est attribuée selon des modalités non explicites
+### Troisième phase
 
 **Tests t19 à t22 :**
 - t19 et t21 : ordre fichier = ordre alphabétique  
@@ -89,11 +86,21 @@ CMD ["tail", "-f", "/dev/null"]
 - t19 et t20 : réseau `internal` = dernier dans le fichier  
 - t21 et t22 : réseau `internal` ≠ dernier dans le fichier
 
+> **Conclusions intermédiaires :**
+>> Si un seul réseau est `internal=true`, c'est à lui qu'est **attribuée une interface en dernier** (ethX avec le X le plus élevé)
+>> La **première adresse réseau** est attribuée au **dernier réseau dans le fichier** docker-compose
+>> Si ce réseau est `internal=false`, il devient la **route par défaut**
+>> Sinon, la route par défaut est attribuée selon des modalités non explicites
+
 ## Traitement des données
 
 - Jeu de données des 22 tests adapté à un **traitement qualitatif**
 - La route par défaut est toujours un réseau `internal=false`
 - Aucune tendance majoritaire ne se confirme, données inexploitables autrement
+
+Le jeu de données obtenu avec les 22 tests est adapté à un **traitement qualitatif** *(trop restreint pour un traitement quantitatif)*. \
+À ce stade, on peut déjà affirmer que **la route par défaut est forcément un réseau ayant le paramètre `internal=false`**. \
+Mis à part cela, ***aucune tendance majoritaire ne semble se confirmer*** ; les données obtenues sont toujours inexploitables en l'état.
 
 ### Analyse statistique
 - Études sur : **eth0**, **route par défaut**, **première adresse réseau**
