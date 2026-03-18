@@ -167,55 +167,53 @@ Dans ce contexte, cet indice s'interprète de la manière suivante :
 
 ##### Méthodologie
 Pour chacun des 3 aspects, j'ai mesuré la proportion de réseaux :
-  * selon leur **positionnement dans le fichier docker-compose.yml**
-  * selon leur **ordre alphabétique**
-  * pour lesquels `external = true`
-  * pour lesquels `internal = true`
-  * pour lesquels 2 ou plus aspects sont vérifiés
+- selon leur **positionnement dans le fichier docker-compose.yml**
+- selon leur **ordre alphabétique**
+- pour lesquels `external = true`
+- pour lesquels `internal = true`
+- pour lesquels 2 ou plus aspects sont vérifiés
+
 ➡️ *à noter que les résultats ont été séparés en fonction de si les réseaux sont **renseignés sous forme de liste** (avec des "-") dans le fichier docker-compose ou non* 
 
+##### Résultats
+> **Légende :** \
+> 🟣 significatif & indépendant de liste \
+> 🔴 significatif & dépendant de liste \
+> 🟤 notable mais difficile à interpréter 
 
-### Résultats
-**Légende :**
-- significatif & indépendant de liste  
-- significatif & dépendant de liste  
-- notable mais difficile à interpréter  
+|                 | eth0    | eth0   | Default route | Default route | 1ère addr rsx | 1ère addr rsx |
+| --------------- | ------- | ------ | ------------- | ------------- | ------------- | ------------- |
+| liste ordonnée  | list=0  | list=1 | list=0        | list=1        | list=0        | list=1        |
+| external = true | 🔴 100% | 60%    | 🟤 0%         | 60%           | 🟣 100%       | 🟣 100%       |
+| internal = true | 🔴 100% | 🟤 0%  | 🟣 0%         | 🟣 0%         | 🟤 0%         | 50%           |
+| ordre dc = 1    | 10%     | 🟤 67% | 🟤 60%        | 44%           | 20%           | 33%           |
+| ordre dc = 2    | 20%     | 11%    | 10%           | 33%           | 🟤 50%        | 0%            |
+| ordre dc = 3    | 🟤 70%  | 22%    | 30%           | 22%           | 30%           | 🟤 67%        |
+| ordre alpha = 1 | 40%     | 22%    | 🟣 90%        | 🟣 89%        | 10%           | 🟤 67%        |
+| ordre alpha = 2 | 10%     | 11%    | 10%           | 11%           | 🟤 70%        | 0%            |
+| ordre alpha = 3 | 50%     | 🟤 67% | 0%            | 0%            | 20%           | 33%           |
+| eth0            | —       | —      | 30%           | 33%           | 20%           | 33%           |
+| default         | 30%     | 33%    | —             | —             | 10%           | 56%           |
+| 1er addr rsx    | 20%     | 33%    | 10%           | 56%           | —             | —             |
 
+> **Hypothèse nulle :** \
+> booléen : **50%** \
+> valeurs échelonnées : **33%**
 
-|                 | eth0    | eth0   | Default route        | Default route        | 1ère adresse réseau        | 1ère adresse réseau        |
-| --------------- | ------- | ------ | -------------------- | -------------------- | -------------------------- | -------------------------- |
-| liste ordonnée  | list=0  | list=1 | Default route list=0 | Default route list=1 | 1ère adresse réseau list=0 | 1ère adresse réseau list=1 |
-| external = true | 🔴 100% | 60%    | 🟤 0%                | 60%                  | 🟣 100%                    | 🟣 100%                    |
-| internal = true | 🔴 100% | 🟤 0%  | 🟣 0%                | 🟣 0%                | 🟤 0%                      | 50%                        |
-| ordre dc = 1    | 10%     | 🟤 67% | 🟤 60%               | 44%                  | 20%                        | 33%                        |
-| ordre dc = 2    | 20%     | 11%    | 10%                  | 33%                  | 🟤 50%                     | 0%                         |
-| ordre dc = 3    | 🟤 70%  | 22%    | 30%                  | 22%                  | 30%                        | 🟤 67%                     |
-| ordre alpha = 1 | 40%     | 22%    | 🟣 90%               | 🟣 89%               | 10%                        | 🟤 67%                     |
-| ordre alpha = 2 | 10%     | 11%    | 10%                  | 11%                  | 🟤 70%                     | 0%                         |
-| ordre alpha = 3 | 50%     | 🟤 67% | 0%                   | 0%                   | 20%                        | 33%                        |
-| eth0            | —       | —      | 30%                  | 33%                  | 20%                        | 33%                        |
-| default         | 30%     | 33%    | —                    | —                    | 10%                        | 56%                        |
-| 1er addr rsx    | 20%     | 33%    | 10%                  | 56%                  | —                          | —                          |
+### Traitement par IA
 
+##### Méthodologie
+Les résultats bruts ainsi que les résultats traités ont été formatés en **CSV**, puis soumis à l'analyse de 2 IA de **type LLM** (*ChatGPT* et *Perplexity*). \
+Le prompt initial contenait également l'explication du *cadre* des tests, de l'*infrastructure* de test ainsi que des *hypothèses* et *modalités de traitement* des données. \
+Il a été demandé d'**identifier des patterns**, soit des attributs évoluant ensemble de manière notable, soit des **règles** qui avaient l'air d'être vraies dans la majorité des cas.
 
+➡️ *à noter que **plusieurs prompts** successifs ont été utilisés afin d'**affiner** l'analyse et de **corriger les incompréhensions**.*
 
-
-
-**Hypothèse nulle :**
-- booléen : 50%  
-- valeurs échelonnées : 33%
-
-## Traitement par IA
-- Résultats bruts et traités soumis à IA (ChatGPT et Perplexity)
-- Identification de **patterns** et **règles**  
-- Plusieurs prompts successifs pour affiner et corriger les incompréhensions
-
-### Conclusions
-- Au moins une règle proposée était toujours fausse
-- IA convergent sur tendances majoritaires mais difficultés aux mêmes endroits
-- Difficultés reflètent l'absence de consensus côté éditeurs, pros IT et amateurs éclairés
-- Docker développé en Go, langage objet  
-- Certaines aberrations peuvent venir du fonctionnement du langage qui réordonne ses entrées
+> **Conclusions intermédiaires :** \
+> À chaque fois que les IA ont proposé, avec beaucoup d'assurance, un pool de règles, **au moins une était toujours visiblement fausse**, et ce malgré les correctifs apportés par la suite. Les deux IA s'accordent sur des tendances qui ont l'air majoritaires et sont mises en difficulté aux mêmes endroits. \
+> Au vu des ressources disponibles sur le sujet, il apparaît que ces difficultés reflètent l'**absence de consensus** sur le sujet, que ce soit du côté des éditeurs, de celui des professionnels de l'IT ou de celui des amateurs éclairés.
+>
+> ChatGPT apporte cependant une remarque intéressante : les **briques fonctionnelles Docker** (compose, engine, ...etc) sont **développées en Go**, un *langage objet*. Il apparaît donc qu'**une partie des "aberrations" constatées pourrait être due au fonctionnement même du langage**, qui réordonne ses entrées pour optimiser leur traitement.
 
 ## Influence du langage GO sur les résultats
 
