@@ -109,7 +109,8 @@ Pour chacun j'ai mesuré :
 - l'**ordre alphabétique** du nom du réseau
 - l'**ordre sur le fichier** docker-compose.yml
 - la valeur de l'**attribut "external"** *(booléen)*
-- si les réseaux sont **organisés sous forme de liste** (avec des "-") dans le docker-compose //(booléen)//
+- si les réseaux sont **organisés sous forme de liste** (avec des "-") dans le docker-compose *(booléen)*
+
 Ainsi que les 2 autres aspects non étudiés (par exemple, j'ai relevé le numéro de l'interface et de l'adresse réseau pour chaque test lorsque j'étudiais l'attribution de la route par défaut).
 
 J'ai utilisé 2 modes de mesure : 
@@ -163,14 +164,42 @@ Dans ce contexte, cet indice s'interprète de la manière suivante :
 > les autres critères sont **très hétérogènes** *(indice < 55)*
 
 #### Analyse proportionnée globale
-- Proportion de réseaux selon : position fichier, ordre alphabétique, `external=true`, `internal=true`  
-- Observation selon forme de liste
+
+##### Méthodologie
+Pour chacun des 3 aspects, j'ai mesuré la proportion de réseaux :
+  * selon leur **positionnement dans le fichier docker-compose.yml**
+  * selon leur **ordre alphabétique**
+  * pour lesquels `external = true`
+  * pour lesquels `internal = true`
+  * pour lesquels 2 ou plus aspects sont vérifiés
+➡️ *à noter que les résultats ont été séparés en fonction de si les réseaux sont **renseignés sous forme de liste** (avec des "-") dans le fichier docker-compose ou non* 
+
 
 ### Résultats
 **Légende :**
 - significatif & indépendant de liste  
 - significatif & dépendant de liste  
 - notable mais difficile à interpréter  
+
+
+|                 | eth0    | eth0   | Default route        | Default route        | 1ère adresse réseau        | 1ère adresse réseau        |
+| --------------- | ------- | ------ | -------------------- | -------------------- | -------------------------- | -------------------------- |
+| liste ordonnée  | list=0  | list=1 | Default route list=0 | Default route list=1 | 1ère adresse réseau list=0 | 1ère adresse réseau list=1 |
+| external = true | 🔴 100% | 60%    | 🟤 0%                | 60%                  | 🟣 100%                    | 🟣 100%                    |
+| internal = true | 🔴 100% | 🟤 0%  | 🟣 0%                | 🟣 0%                | 🟤 0%                      | 50%                        |
+| ordre dc = 1    | 10%     | 🟤 67% | 🟤 60%               | 44%                  | 20%                        | 33%                        |
+| ordre dc = 2    | 20%     | 11%    | 10%                  | 33%                  | 🟤 50%                     | 0%                         |
+| ordre dc = 3    | 🟤 70%  | 22%    | 30%                  | 22%                  | 30%                        | 🟤 67%                     |
+| ordre alpha = 1 | 40%     | 22%    | 🟣 90%               | 🟣 89%               | 10%                        | 🟤 67%                     |
+| ordre alpha = 2 | 10%     | 11%    | 10%                  | 11%                  | 🟤 70%                     | 0%                         |
+| ordre alpha = 3 | 50%     | 🟤 67% | 0%                   | 0%                   | 20%                        | 33%                        |
+| eth0            | —       | —      | 30%                  | 33%                  | 20%                        | 33%                        |
+| default         | 30%     | 33%    | —                    | —                    | 10%                        | 56%                        |
+| 1er addr rsx    | 20%     | 33%    | 10%                  | 56%                  | —                          | —                          |
+
+
+
+
 
 **Hypothèse nulle :**
 - booléen : 50%  
