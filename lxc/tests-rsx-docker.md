@@ -219,7 +219,7 @@ Il a été demandé d'**identifier des patterns**, soit des attributs évoluant 
 
 ### Analyses
 
-### Notes & références
+## Notes & références
 - [Open Container Initiative](https://opencontainers.org/)  
 - Traitement des données :  
   - [Indice de Simpson](https://fr.wikipedia.org/wiki/Indice_de_Simpson#:~:text=L'indice%20de%20Simpson%20est,d'individus%20class%C3%A9s%20en%20cat%C3%A9gories.)  
