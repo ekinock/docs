@@ -54,12 +54,12 @@ CMD ["tail", "-f", "/dev/null"]
 
 
 > **Conclusions intermédiaires :**
->> Dans certains cas l'**ordre alphabétique** a l'air de primer sur l'ordre du docker-compose, dans d'autres c'est l'inverse
->> Les réseaux `internal=true` ne sont **jamais route par défaut**
->> Lorsque `external=false`, les **interfaces** semblent être attribuées en suivant l'**ordre alphabétique**
->> Seul l'ordre dans l'**attribut de niveau 1** "networks" a l'air d'avoir un impact, pas celui dans `services > <nom_service> > networks`
->> L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire
->> Les alias n'ont pas d'effet
+> Dans certains cas l'**ordre alphabétique** a l'air de primer sur l'ordre du docker-compose, dans d'autres c'est l'inverse \
+> Les réseaux `internal=true` ne sont **jamais route par défaut** \
+> Lorsque `external=false`, les **interfaces** semblent être attribuées en suivant l'**ordre alphabétique** \
+> Seul l'ordre dans l'**attribut de niveau 1** "networks" a l'air d'avoir un impact, pas celui dans `services > <nom_service> > networks` \
+> L'attribution des interfaces lorsque sont mélangés des réseaux internal et non-internal semble aléatoire
+>- Les alias n'ont pas d'effet
 
 
 ### Deuxième phase
